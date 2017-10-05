@@ -1,51 +1,42 @@
 'use strict';
+
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
-const db = require('../db.js');
-
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const User = new Schema ({
-    username: String,
-    password: String,
-    email: String,
-    files: String
+  email: String,
+  password: String,
+  files: Array
 });
 
 const UserModel = mongoose.model('User', User);
 
+exports.getUser = (email) => {
+  return UserModel.findOne({email});
+};
+
 exports.getUsers = async () => {
-   return UserModel.find();
+  return UserModel.find();
 };
 
 exports.deleteOne = async (data) => {
-  let username = data.username;
-  return UserModel.find({ username }).remove()
-
-}
+  let email = data.email;
+  return UserModel.find({ email }).remove();
+};
 
 exports.findUser = async (data) => {
-  return UserModel.findOne({ username: data })
-}
+  return UserModel.findOne({ email: data });
+};
 
-exports.postUsers = async (data) => {
-  try {
-    const hash = await bcrypt.hash(data.password, saltRounds)
-      // Store hash in your password DB.
-      const newUser = new UserModel ({
-        username: data.username,
-        password: hash,
-        email: data.email,
-        files: data.files
-      });
-      // console.log('THIS IS THE DATA FOR THE USER MODEL', data.username, hash, data.email, data.files);
-      // console.log('THIS IS THE NEW USER', newUser);
-      await newUser.save();
-  } catch (e) {
-      console.log(e);
-  }
-
+exports.createUser = async (data) => {
+  const hash = await bcrypt.hash(data.password, saltRounds);
+  const newUser = new UserModel ({
+    ...data,
+    password: hash,
+    files: []
+  });
+  await newUser.save();
 };

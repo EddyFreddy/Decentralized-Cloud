@@ -1,80 +1,70 @@
-console.log('inside usercontroller');
+'use strict';
 
-const userModel = require('../models/user.js');
+const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const atob = require('atob');
 
 exports.signin = async ctx => {
-
-  console.log('inside signin');
-
   const saltRounds = 10;
-  const username = ctx.request.body.username;
-  const password = ctx.request.body.password;
-
-  console.log('inside signin');
-  const users = await userModel.getUsers();
-  for (let i = 0; i < users.length; i++) {
-    if(req.body.username === users[i].username) {
-      if (await bcrypt.compare(req.body.password , users[i].password)){
-        // console.log('CORRECT PASSWORD', await bcrypt.compare(ctx.request.body.password , users[i].password));
-        const token = await jwt.sign(ctx.body.username}, 'winniethepoop', {expiresIn: 2502000});
-       ctx.send({
-         details,
-         token
-       });
-        console.log('THIS IS THE TOKEN:', token);
-         ctx.status = 200;
-      }
-      else {
-        console.log('INCORRECT PASSWORD', await bcrypt.compare(req.body.password , users[i].password));
-        ctx.status = 400;
-      }
-
-    }
-
+  const header = ctx.headers['authorization']
+    ? ctx.headers['authorization'].split(' ')
+    : [];
+  if (header.length < 2) {
+    ctx.status = 401;
+    throw new Error('Credentials not provided');
   }
-}
+
+  const [email, password] = atob(header[1]).split(':');
+  const user = await User.getUser(email);
+  if (!user) {
+    ctx.status = 401;
+    throw new Error('Credentials not valid');
+  }
+  if (await bcrypt.compare(password , user.password)) {
+    const token = await jwt.sign({email}, 'winniethepoop', {expiresIn: 2502000});
+    ctx.body = {
+      user: {
+        email: user.email,
+        files: user.files,
+      },
+      token,
+    };
+    ctx.status = 200;
+  }
+  else {
+    ctx.status = 400;
+  }
+};
 
 exports.deleteUser = async ctx => {
-  const users = await userModel.getUsers();
+  const users = await User.getUsers();
   for (let i = 0; i < users.length; i++) {
-    if (ctx.request.body.username === users[i].username) {
+    if (ctx.request.body.email === users[i].email) {
       if (await bcrypt.compare(ctx.request.body.password , users[i].password)) {
-        userModel.deleteOne(ctx.request.body)
+        User.deleteOne(ctx.request.body);
         ctx.status = 201;
       } else {
-        ctx.body = 'username and password combination not accepted'
+        ctx.body = 'email and password combination not accepted';
         ctx.status = 401;
       }
     }
   }
 
-}
+};
 
 exports.signup = async ctx => {
-  console.log('inside signup');
-  // console.log(ctx.request.body);
-  let checked = false;
-  const users = await userModel.getUsers();
-  // console.log('THESE ARE THE USERS:', users);
-  for (let i = 0; i < users.length; i++) {
-    if (ctx.request.body.username === users[i].username) {
-      checked = true;
-    }
-  }
-  if (checked === true) {
-    ctx.body = 'There is already an account with that username';
-    ctx.status = 400;
+  const email = ctx.request.body.email;
+  const user = await User.getUser(email);
 
-  } else {
-    userModel.postUsers(ctx.request.body)
-    // console.log('check = false');
-    ctx.status = 201;
-  }
-  // ctx.body = 'test working'
-}
+  if (user !== null) throw new Error('Username already exists.');
 
-exports.signout = async ctx => {
-  console.log('inside signout');
-}
+  await User.createUser({
+    email,
+    password: ctx.request.body.password,
+  });
+  ctx.status = 201;
+
+};
+
+exports.protected = ctx => ctx.body = ctx.user;
