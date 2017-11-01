@@ -14,7 +14,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^4.4.1",
-    "@angular/cdk": "^2.0.0-beta.11",
+    "@angular/cdk": "github:angular/cdk-builds",
     "@angular/common": "^4.4.1",
     "@angular/compiler": "^4.4.1",
     "@angular/core": "^4.4.1",
@@ -38,6 +38,7 @@
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-cors": "0.0.16",
+    "koa-logger": "^3.1.0",
     "koa-oauth-server": "^1.0.1",
     "koa-router": "^7.2.1",
     "koa-static": "^4.0.1",
@@ -50,7 +51,6 @@
     "readable-stream": "^2.3.3",
     "rxjs": "^5.4.3",
     "stream": "0.0.2",
-    "stream-buffers": "^3.0.1",
     "webtorrent": "^0.98.19",
     "zone.js": "^0.8.17"
   },
