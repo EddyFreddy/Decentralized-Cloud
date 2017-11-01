@@ -14,7 +14,7 @@ import { TransferComponent } from './transfer/transfer.component';
 import { InputComponent } from './input/input.component';
 import { TestComponent } from './test/test.component';
 import { LogInComponent } from './log-in/log-in.component';
-import { AccountComponent } from './account/account.component';
+// import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import { AccountComponent } from './account/account.component';
     InputComponent,
     TestComponent,
     LogInComponent,
-    AccountComponent,
+    // AccountComponent,
   ],
   imports: [
     BrowserModule,
