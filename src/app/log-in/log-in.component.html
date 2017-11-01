@@ -11,9 +11,9 @@
 
 <div class="loginHolder" *ngIf="this.login == true" >
 <h2> Log-in to Decentralized Cloud</h2>
-<input type="text" placeholder="email">
-<input type="text" placeholder="password">
-<button class="loginButton" (click)="onSignin()"> Submit </button>
+<input type="text" #email placeholder="email" id="email">
+<input type="text" #password placeholder="password" id="password">
+<button class="loginButton" (click)="onSignin(email.value, password.value)"> Submit </button>
 <p>Don't have an account already? Sign-up <button class="transferButton"(click)="buttonClick2()">here</button>  </p>
 </div>
 

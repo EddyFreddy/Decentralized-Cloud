@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from '../account-service/account.service';
 
 @Component({
   selector: 'app-log-in',
   templateUrl: './log-in.component.html',
-  styleUrls: ['./log-in.component.css']
+  styleUrls: ['./log-in.component.css'],
+  providers: [AccountService]
 })
+
 export class LogInComponent implements OnInit {
 
-  constructor() { }
+  constructor(private AccountService: AccountService) { }
 
   ngOnInit() {
   }
@@ -24,11 +27,13 @@ export class LogInComponent implements OnInit {
     this.signup = false;
   }
 
-  onSignin() {
-    this.loggedin = true;
-    this.option = false;
-    this.login = false;
-    this.signup = false;
+  onSignin  (email: string, password: string) {
+    // const email = await this.AccountService.login(email, password)
+    //  asycnthis.AccountService.login(email, password)
+    // this.loggedin = true;
+    // this.option = false;
+    // this.login = false;
+    // this.signup = false;
   }
 
 
